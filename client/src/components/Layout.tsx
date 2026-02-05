@@ -21,7 +21,7 @@ export function Layout({ children }: LayoutProps) {
       </main>
       <footer className="bg-white border-t border-border py-6 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2024 وەزارەتی پێشمەرگە. هەموو مافەکان پارێزراون.</p>
+          <p>© 2026 دیزاین کراوە لە لایەن کاروان خۆشناو - ئیدارەی ئەفسەران. هەموو مافەکان پارێزراون.</p>
         </div>
       </footer>
     </div>

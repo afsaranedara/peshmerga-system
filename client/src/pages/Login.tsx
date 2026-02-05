@@ -1,25 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Shield, ScanLine } from "lucide-react";
-import { motion } from "framer-motion";
+import { Shield, ScanLine, Camera, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function Login() {
   const { login, isLoggingIn } = useAuth();
   const [fullName, setFullName] = useState("");
   const [militaryId, setMilitaryId] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login({ fullName, militaryId });
   };
 
+  // کردنی کامێرا بۆ سکانکردن
+  useEffect(() => {
+    let scanner: any = null;
+    if (isScanning) {
+      scanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false
+      );
+
+      scanner.render((decodedText: string) => {
+        setMilitaryId(decodedText); // ژمارەکە دەخاتە ناو ئینپوتەکە
+        setIsScanning(false); // کامێراکە دادەخات
+        scanner.clear();
+      }, (error: any) => {
+        // هەڵەی سکان لێرە دەتوانرێت پشتگوێ بخرێت
+      });
+    }
+
+    return () => {
+      if (scanner) {
+        scanner.clear().catch((error: any) => console.error("Failed to clear scanner", error));
+      }
+    };
+  }, [isScanning]);
+
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-      {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
@@ -46,6 +73,7 @@ export default function Login() {
               تکایە زانیاریەکانت بنووسە یان ناسنامەکەت سکان بکە
             </CardDescription>
           </CardHeader>
+          
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4 pt-4">
               <div className="space-y-2">
@@ -59,21 +87,56 @@ export default function Login() {
                   required
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="militaryId" className="text-right block">ژمارەی ناسنامەی سەربازی</Label>
-                <div className="relative">
-                  <Input
-                    id="militaryId"
-                    placeholder="ID سکان بکە یان بنووسە"
-                    value={militaryId}
-                    onChange={(e) => setMilitaryId(e.target.value)}
-                    className="bg-slate-50 h-12 text-lg text-right pl-10 font-mono"
-                    required
-                  />
-                  <ScanLine className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                <div className="relative flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      id="militaryId"
+                      placeholder="ID بنووسە یان سکان بکە"
+                      value={militaryId}
+                      onChange={(e) => setMilitaryId(e.target.value)}
+                      className="bg-slate-50 h-12 text-lg text-right pl-10 font-mono"
+                      required
+                    />
+                    <ScanLine className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    className="h-12 w-12 border-primary text-primary hover:bg-primary hover:text-white"
+                    onClick={() => setIsScanning(true)}
+                  >
+                    <Camera className="h-6 w-6" />
+                  </Button>
                 </div>
               </div>
+
+              {/* پەنجەرەی سکانەر */}
+              <AnimatePresence>
+                {isScanning && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden border-2 border-dashed border-primary rounded-lg p-2 bg-slate-50 relative"
+                  >
+                    <div id="reader" className="w-full"></div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-1 right-1 text-red-500"
+                      onClick={() => setIsScanning(false)}
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                    <p className="text-center text-xs mt-2 text-primary font-bold">باری کۆد یان QR بخەرە بەردەم کامێرا</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </CardContent>
+
             <CardFooter>
               <Button 
                 type="submit" 
