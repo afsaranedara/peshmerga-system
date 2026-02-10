@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "dev": "tsx server/index.ts",
     "build": "vite build",
     "start": "tsx server/index.ts",
     "check": "tsc",
@@ -105,13 +105,5 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
-  },
-  "overrides": {
-    "drizzle-kit": {
-      "@esbuild-kit/esm-loader": "npm:tsx@^4.20.4"
-    }
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8"
   }
 }
