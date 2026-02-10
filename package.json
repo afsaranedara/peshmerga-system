@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx server/index.ts",
-    "build": "vite build && tsc",
-    "start": "node dist/index.js",
-    "koyeb-build": "npm install && npm run build",
+    "build": "vite build",
+    "start": "tsx server/index.ts",
+    "check": "tsc",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
