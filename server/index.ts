@@ -82,16 +82,16 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // لێرەدا ڕاستکراوەتەوە: تەنها یەک پۆرت و داخستنی کەوانەکان
+  // لێرەدا ڕاستکراوەتەوە: گۆڕینی 127.0.0.1 بۆ 0.0.0.0 بۆ کارکردن لەسەر ئینتەرنێت
   const port = parseInt(process.env.PORT || "3000", 10);
   
   httpServer.listen(
     {
       port,
-      host: "127.0.0.1",
+      host: "0.0.0.0",
     },
     () => {
-      log(`serving on http://127.0.0.1:${port}`);
+      log(`serving on port ${port}`);
     },
   );
-})(); // ئەم کەوانەیە گرنگ بوو بۆ داخستنی (async () => {
+})();
